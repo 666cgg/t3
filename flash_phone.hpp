@@ -55,7 +55,9 @@ public:
     static std::basic_string<char> current_slot(){
         return a16();
     }
-
+    static std::string adb_install_apk(const std::string &id, const std::string&path){
+        return a17(id,path);
+    }
 private:
     static int a1(int a) {
         if(a==0){
@@ -150,6 +152,11 @@ private:
     static std::basic_string<char> a16(){
         std::string a="fastboot getvar current-slot";
         auto b =exec(a.c_str());
+        return b;
+    }
+    static std::string a17(const std::string &id, const std::string&path){
+        std::string a="adb -s "+id+" install "+path;
+        auto b= exec(a.c_str());
         return b;
     }
 };
