@@ -58,6 +58,9 @@ public:
     static std::string adb_install_apk(const std::string &id, const std::string&path){
         return a17(id,path);
     }
+    static std::string all_app(const std::string &id){
+        return a18(id);
+    }
 private:
     static int a1(int a) {
         if(a==0){
@@ -156,6 +159,21 @@ private:
     }
     static std::string a17(const std::string &id, const std::string&path){
         std::string a="adb -s "+id+" install "+path;
+        auto b= exec(a.c_str());
+        return b;
+    }
+    static std::string a18(const std::string &id){
+        std::string a="adb -s "+id+" shell pm list packages";
+        auto b= exec(a.c_str());
+        return b;
+    }
+    static std::string a19(const std::string &id,const std::string&app_name){
+        std::string a="adb -s "+id+" pm list packages -f | grep "+app_name;
+        auto b= exec(a.c_str());
+        return b;
+    }
+    static std::string a20(const std::string &id,const std::string&app_name){
+        std::string a="adb -s "+id+" shell pm disable "+app_name;
         auto b= exec(a.c_str());
         return b;
     }
