@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <regex>
 namespace fs = std::filesystem;
-class flash_phone {
+class flash_phone:other {
 public:
     static int devices_phone(int a) {
         return a1(a);
@@ -60,6 +60,15 @@ public:
     }
     static std::string all_app(const std::string &id){
         return a18(id);
+    }
+    static std::string app_name(const std::string &id,const std::string &app_name){
+        return a19(id,app_name);
+    }
+    static std::string disable_app(const std::string &id,const std::string &app_name){
+        return a20(id,app_name);
+    }
+    static std::string enable_app(const std::string &id,const std::string &app_name){
+        return a21(id,app_name);
     }
 private:
     static int a1(int a) {
@@ -174,6 +183,11 @@ private:
     }
     static std::string a20(const std::string &id,const std::string&app_name){
         std::string a="adb -s "+id+" shell pm disable "+app_name;
+        auto b= exec(a.c_str());
+        return b;
+    }
+    static std::string a21(const std::string &id,const std::string&app_name){
+        std::string a="adb -s "+id+" shell pm enable "+app_name;
         auto b= exec(a.c_str());
         return b;
     }
