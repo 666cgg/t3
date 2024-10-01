@@ -5,8 +5,12 @@
 #include <iostream>
 #include <filesystem>
 #include <regex>
+#include "other.hpp"
 namespace fs = std::filesystem;
-class t3 {
+std::string other::user = "";
+std::string other::pass = "";
+std::string other::imei = "";
+class t3 :other{
 public:
     static bool downloadFile(const std::string&url,const std::string&path,const std::string&outputFile) {
         return a15(url,path,outputFile);
@@ -58,7 +62,7 @@ public:
          return a12(filename);
      }
 private:
-        static inline int a(const std::string& url,const std::string &path,const std::string &appkey,const std:: string& kami,const std::string &imei,const std:: string&t,const std:: string&s){
+        static int a(const std::string& url,const std::string &path,const std::string &appkey,const std:: string& kami,const std::string &imei,const std:: string&t,const std:: string&s){
             httplib::Client cl(url);
             httplib::Params params;
             params.emplace("kami",kami);
@@ -232,7 +236,7 @@ private:
                         delete firstLine;
                         using json = nlohmann::json;
                         json j;
-                        j["xinxi"] = {
+                        j["userdata"] = {
                             {"user", user},
                             {"pass", pass},
                             {"imei", imei},
@@ -361,37 +365,14 @@ private:
             return j;
         }
         static int a13(const std::string&url,const std::string&path,const std::string&t,const std::string&s,const std::string& filename) {
-            using json = nlohmann::json;
-            std::ifstream file(filename);
-            if (!file.is_open()) {
-                return 1;
-            }
-            json j;
-            file >> j;
-            if (file.fail()) {
-                throw std::runtime_error("无法解析文件为JSON: " + filename);
-            }
 
-            // 从json对象中提取信息
-            if (j.contains("xinxi") && j["xinxi"].is_object()) {
-                const auto& xinxi = j["xinxi"];
-                if (xinxi.contains("imei") && xinxi["imei"].is_string()) {
-                    std::cout << "IMEI: " << xinxi["imei"].get<std::string>() << std::endl;
-                }
-                if (xinxi.contains("pass") && xinxi["pass"].is_string()) {
-                    std::cout << "Password: " << xinxi["pass"].get<std::string>() << std::endl;
-                }
-                if (xinxi.contains("user") && xinxi["user"].is_string()) {
-                    std::cout << "User: " << xinxi["user"].get<std::string>() << std::endl;
-                }
-            std::string user=xinxi["user"].get<std::string>();
-            std::string pass=xinxi["pass"].get<std::string>();
-            std::string imei=xinxi["imei"].get<std::string>();
+            load_configuration("Profiles.json");
+            const std::string user=other::user;
+            const std::string pass=other::pass;
+            const std::string imei=other::imei;
             return a6(url,path,user,pass,imei,t,s);
+        }
 
-            }
-            throw std::runtime_error("JSON文件缺少'xinxi'键或其不是一个对象: " + filename);
-    }
         static int a14(const std::string&url,const std::string&path,const std::string&outputFile) {
             return a15(url,path,outputFile);
         }
@@ -413,152 +394,4 @@ private:
 
             return false;
         }
-};
-class flash_phone {
-public:
-    static int devices_phone(int a) {
-        return a1(a);
-    }
-    static std::string get_version() {
-        return a2();
-    }
-    static int get_id() {
-        return a3();
-    }
-    static std::basic_string<char> fastboot_clean_userdata(const std::string &id) {
-        return a4(id);
-    }
-    static std::basic_string<char> unlock_bootloader(const std::string &id) {
-        return a5(id);
-    }
-    static std::basic_string<char> flash_boot(const std::string &id, const std::string&path) {
-        return a6(id,path);
-    }
-    static std::basic_string<char> flash_init_boot(const std::string &id, const std::string&path){
-        return a7(id,path);
-    }
-    static std::string kernel_version(const std::string &id){
-        return a8(id);
-    }
-    static std::basic_string<char> run_shell(const std::string&path){
-        return a9(path);
-    }
-    static int all_file(const std::string &directoryPath){
-        return a10(directoryPath);
-    }
-    static std::basic_string<char> transmit(const std::string &path1, const std::string &path2){
-        return a11(path1,path2);
-    }
-    static std::basic_string<char> adb_reboot_bootloader(const std::string&id){
-        return a12(id);
-    }
-    static std::basic_string<char> fastboot_reboot(const std::string&id){
-        return a13(id);
-    }
-    static std::basic_string<char> flash_boot_a(const std::string &id, const std::string&path){
-        return a14(id,path);
-    }
-    static std::basic_string<char> flash_boot_b(const std::string &id, const std::string&path){
-        return a15(id,path);
-    }
-    static std::basic_string<char> current_slot(){
-        return a16();
-    }
-
-private:
-    static int a1(int a) {
-       if(a==0){
-           std::string b=exec("adb devices");
-           std::cout<<b<<std::endl;
-       }
-        std::string b=exec("fastboot devices");
-       std::cout<<b<<std::endl;
-        return 0;
-    }
-    static std::string a2() {
-        std::string deviceId = exec("getprop ro.build.version.release").substr(0, exec("getprop ro.build.version.release").find('\n'));
-        return deviceId;
-    }
-    static int a3() {
-        exec("adb devices");
-        return 0;
-    }
-    static std::string exec(const char* cmd) {
-        std::array<char, 1024> buffer{};
-        std::string result;
-        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-        if (!pipe) {
-            throw std::runtime_error("open() failed!");
-        }
-        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-            result += buffer.data();
-        }
-        return result;
-    }
-    static std::basic_string<char> a4(const std::string &id) {
-        std::string a="fastboot -s "+id+" erase userdata";
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a5(const std::string &id) {
-        std::string a="fastboot -s "+id+" oem unlock";
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a6(const std::string &id, const std::string&path) {
-        std::string a="fastboot -s "+id+" flash boot "+path;
-        auto b =exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a7(const std::string &id, const std::string&path){
-        std::string a="fastboot -s "+id+" flash init_boot "+path;
-        auto b =exec(a.c_str());
-        return b;
-    }
-    static std::string a8(const std::string &id){
-        std::string a="adb -s "+id+" shell uname -r ";
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a9(const std::string &path){
-        std::string a="."+path;
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static int a10(const std::string &directoryPath){
-        for (const auto &entry : fs::directory_iterator(directoryPath)) {
-            std::cout << entry.path().filename() << std::endl;
-        }
-        return 0;
-    }
-    static std::basic_string<char> a11(const std::string &path1, const std::string &path2){
-        std::string a="dd if="+path1+" of="+path2;
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a12(const std::string&id){
-        std::string a="adb -s "+id+" reboot bootloader";
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::string a13(const std::string&id){
-        std::string a="fastboot -s "+id+" reboot";
-        auto b=exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a14(const std::string &id, const std::string&path) {
-        std::string a="fastboot -s "+id+" flash boot_a "+path;
-        auto b =exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a15(const std::string &id, const std::string&path) {
-        std::string a="fastboot -s "+id+" flash boot_b "+path;
-        auto b =exec(a.c_str());
-        return b;
-    }
-    static std::basic_string<char> a16(){
-        std::string a="fastboot getvar current-slot";
-        auto b =exec(a.c_str());
-        return b;
-    }
 };
