@@ -3,8 +3,6 @@
 #include"include/nlohmann/json.hpp"
 #include <fstream>
 #include <iostream>
-#include <filesystem>
-#include <regex>
 #include "other.hpp"
 namespace fs = std::filesystem;
 std::string other::user = "";
@@ -61,6 +59,9 @@ public:
     static nlohmann::json read_json_file(const std::string& filename) {
          return a12(filename);
      }
+    static std::string new_version(const std::string&url,const std::string&path,const std::string&version,const std::string&t,const std::string&s) {
+        return a16(url,path,version,t,s);
+    }
 private:
         static int a(const std::string& url,const std::string &path,const std::string &appkey,const std:: string& kami,const std::string &imei,const std:: string&t,const std:: string&s){
             httplib::Client cl(url);
@@ -98,14 +99,12 @@ private:
                         delete firstLine;
                         return 1;
                     }
-                }else {
-                    return 1;
                 }
-            }else {
-                return 2;
+                return 1;
             }
+            return 2;
         }
-        static inline int a2(const std::string& url,const std::string &path,const std::string&appkey,const std::string&kami,const std::string&imei,const std::string&t,const std::string&s){
+        static int a2(const std::string& url,const std::string &path,const std::string&appkey,const std::string&kami,const std::string&imei,const std::string&t,const std::string&s){
             httplib::Client cl(url);
             httplib::Params params;
             params.emplace("kami",kami);
@@ -123,7 +122,7 @@ private:
                 return 1;
             }
         }
-        static inline int a2(const std::string& url,const std::string &path,const std::string&appkey,const std::string&user,const std::string&pass,const std::string&imei,const std::string&t,const std::string&s){
+        static int a2(const std::string& url,const std::string &path,const std::string&appkey,const std::string&user,const std::string&pass,const std::string&imei,const std::string&t,const std::string&s){
             httplib::Client cl(url);
             httplib::Params params;
             params.emplace("user",user);
@@ -254,12 +253,10 @@ private:
                         delete firstLine;
                         return 1;
                     }
-                }else {
-                    return 5;
                 }
-            }else {
-                return 2;
+                return 5;
             }
+            return 2;
         }
         static std::string a7(const std::string&url,const std::string&path,const std::string&user,const std::string&card,const std::string&t,const std::string&s){
             httplib::Client cl(url);
@@ -314,15 +311,12 @@ private:
                         delete content;
                         delete firstLine;
                         return 0;
-                    }else{
-                        return 1;
                     }
-                }else {
                     return 1;
                 }
-            }else {
-                return 2;
+                return 1;
             }
+            return 2;
         }
         static std::string a10(const std::string&url,const std::string&path,const std::string&user,const std::string&oldpass,const std::string&newpass,const std::string&t,const std::string&s) {
             httplib::Client cl(url);
@@ -335,9 +329,8 @@ private:
             auto res=cl.Post(path,params);
             if(res) {
                 return res->body;
-            }else {
-                return "连接失败";
             }
+            return "连接失败";
         }
         static std::string a11(const std::string&url,const std::string&path,const std::string&kami,const std::string&t,const std::string&s) {
             httplib::Client cl(url);
@@ -348,9 +341,8 @@ private:
             auto res=cl.Post(path,params);
             if(res) {
                 return res->body;
-            }else {
-                return "连接失败";
             }
+            return "连接失败";
         }
         static nlohmann::json a12(const std::string& filename) {
             std::ifstream file(filename);
@@ -358,7 +350,7 @@ private:
                 throw std::runtime_error("无法打开文件: " + filename);
             }
             nlohmann::json j;
-            file >> j; // 解析文件内容为json对象
+            file >> j;
             if (file.fail()) {
                 throw std::runtime_error("无法解析文件为JSON: " + filename);
             }
@@ -385,13 +377,22 @@ private:
                     ofs.write(res->body.data(), res->body.size());
                     ofs.close();
                     return true;
-                } else {
-                    std::cerr << "无法打开输出文件: " << outputFile << std::endl;
                 }
+                std::cerr << "无法打开输出文件: " << outputFile << std::endl;
             } else {
                 std::cerr << "请求失败: " <<  std::endl;
             }
 
             return false;
+        }
+        static std::string a16(const std::string&url,const std::string&path,const std::string&version,const std::string&t,const std::string&s) {
+            httplib::Client cl(url);
+            httplib::Params params;
+            params.emplace("ver",version);
+            params.emplace("t",t);
+            params.emplace("s",s);
+            auto res=cl.Post(path,params);
+            auto b=res->body;
+            return b;
         }
 };
