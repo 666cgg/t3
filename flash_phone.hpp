@@ -2,7 +2,7 @@
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
-class flash_phone:other {
+class flash_phone:other{
 public:
     static int devices_phone(int a) {
         return a1(a);

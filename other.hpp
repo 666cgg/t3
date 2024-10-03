@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <cstdarg>
+namespace fs=std::filesystem;
+using json = nlohmann::json;
 class other {
 public:
     static std::string body_return;
@@ -42,5 +44,15 @@ public:
             }
         }
     }
+    static int check_file(const std::string& path) {
+
+        if(fs::exists(path)) {
+            return 0;
+        }
+        return 1;
+    }
+    
+
+
 };
 

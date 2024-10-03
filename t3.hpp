@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "other.hpp"
+#include "flash_phone.hpp"
 namespace fs = std::filesystem;
 std::string other::body_return="";//必须符号，请勿删除
 class t3 :other{
@@ -227,12 +228,11 @@ private:
                         delete status_code;
                         delete content;
                         delete firstLine;
-                        using json = nlohmann::json;
                         json j;
                         j["userdata"] = {
                             {"user", user},
                             {"pass", pass},
-                            {"imei", imei},
+                            {"imei", imei}
                         };
                         std::string json_str=j.dump(4);
                         std::ofstream o("Profiles.json");

@@ -7,7 +7,6 @@ std::string version="1000";
 int main() {
     SetConsoleOutputCP(65001);
     other::setColor(1);
-
     while (true) {
         auto*q=new std::string;
         *q=t3::new_version("http://w.t3yanzheng.com","/3B3A6F36D0CBCBFB","","");
