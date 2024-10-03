@@ -1,15 +1,19 @@
 #include <iostream>
 #include "t3.hpp"
 #include"flash_phone.hpp"
+#include"other.hpp"
 #include<windows.h>
 std::string version="1000";
 int main() {
     SetConsoleOutputCP(65001);
+    other::setColor(1);
+
     while (true) {
         auto*q=new std::string;
         *q=t3::new_version("http://w.t3yanzheng.com","/3B3A6F36D0CBCBFB","","");
         if(*q>version){
             std::cout<<"当前版本非最新版，请更新\n";
+            system("sleep 3");
             exit(0);
         }
         if(*q<version){
@@ -44,7 +48,7 @@ int main() {
                     delete imei;
                     system("sleep 2");
                     system("cls");
-                    goto mark1;
+                    goto mark5;
                 } else {
                     std::cout<<"剩余次数："<<3-i<<std::endl;
                     std::cout<<"任意键重试\n";
@@ -93,6 +97,15 @@ int main() {
             goto mark2;
         }else if(*a==2){
             int i=0;
+            auto b=t3::Automatic_login("http://w.t3yanzheng.com","/684EB7A5C811AFC7","","","Profiles.json");
+            if (b == 0) {
+                std::cout << "登录成功\n";
+                system("sleep 2");
+                system("cls");
+                goto mark1;
+            }else if(b==1){
+                std::cout<<"无法检测到用户信息，正在切换手动登录\n";
+            }
             for(i=0;i<=3;i++) {
                 auto *user = new std::string;
                 auto *pass = new std::string;
@@ -103,11 +116,11 @@ int main() {
                 std::cin >> *pass;
                 std::cout << "请输入设备码\n";
                 std::cin >> *imei;
-                int *b = new int;
-                *b = t3::user_login("http://w.t3yanzheng.com", "/684EB7A5C811AFC7", *user, *pass, *imei, "", "");
-                if (*b == 0) {
+                int *h = new int;
+                *h = t3::user_login("http://w.t3yanzheng.com", "/684EB7A5C811AFC7", *user, *pass, *imei, "", "");
+                if (*h == 0) {
                     std::cout << "登录成功\n";
-                    delete b;
+                    delete h;
                     delete user;
                     delete pass;
                     delete imei;
@@ -115,7 +128,7 @@ int main() {
                     system("cls");
                     goto mark1;
                 } else {
-                    delete b;
+                    delete h;
                     delete user;
                     delete pass;
                     delete imei;
@@ -146,6 +159,8 @@ int main() {
             system("sleep 2");
             system("cls");
             goto mark2;
+        }else if(*a==20081227){
+            goto mark5;
         }else{
             exit(0);
         }
@@ -179,7 +194,6 @@ int main() {
                 delete u;
                 exit(0);
             }
-
         }else if(*y==2){
             auto *o=new std::string;
             flash_phone::devices_phone(1);
@@ -189,7 +203,6 @@ int main() {
             delete o;
         }else if(*y==3){
             int *e=new int;
-
             std::cout<<"您的设备id如下\n";
             flash_phone::devices_phone(0);
             int *o=new int;
@@ -204,8 +217,6 @@ int main() {
             std::cout<<"正在将您指定的设备重启到bootloader模式\n";
             std::cout<<"如果没有重启到bootloader请手动重启\n";
             flash_phone::adb_reboot_bootloader(*h);
-
-
             std::cout<<"下面是通用boot镜像，请选择与您设备相符的版本使用\n";
             system("sleep 2");
             flash_phone::all_file("boot");
