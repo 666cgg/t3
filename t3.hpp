@@ -5,9 +5,7 @@
 #include <iostream>
 #include "other.hpp"
 namespace fs = std::filesystem;
-std::string other::user = "";
-std::string other::pass = "";
-std::string other::imei = "";
+std::string other::body_return="";//必须符号，请勿删除
 class t3 :other{
 public:
     static bool downloadFile(const std::string&url,const std::string&path,const std::string&outputFile) {
@@ -91,14 +89,13 @@ private:
                         delete content;
                         delete firstLine;
                         return 0;
-                    }else {
-                        std::cout<<*content<<std::endl;
-                        delete fanhuiti;
-                        delete status_code;
-                        delete content;
-                        delete firstLine;
-                        return 1;
                     }
+                    std::cout<<*content<<std::endl;
+                    delete fanhuiti;
+                    delete status_code;
+                    delete content;
+                    delete firstLine;
+                    return 1;
                 }
                 return 1;
             }
@@ -118,9 +115,8 @@ private:
                 std::cout<<*content<<std::endl;
                 delete content;
                 return 0;
-            }else {
-                return 1;
             }
+            return 1;
         }
         static int a2(const std::string& url,const std::string &path,const std::string&appkey,const std::string&user,const std::string&pass,const std::string&imei,const std::string&t,const std::string&s){
             httplib::Client cl(url);
@@ -137,9 +133,8 @@ private:
                 std::cout<<*content<<std::endl;
                 delete content;
                 return 0;
-            }else {
-                return 1;
             }
+            return 1;
         }
         static std::string a3(const std::string& url,const std::string& path,const std::string& t,const std::string& s)
         {
@@ -151,9 +146,8 @@ private:
             if(res) {
 
                 return res->body;
-            }else{
-                return "连接失败";
             }
+            return "连接失败";
         }
         static std::string readFirstLine(const std::string& response) {
             std::istringstream inputStream(response);
@@ -357,11 +351,12 @@ private:
             return j;
         }
         static int a13(const std::string&url,const std::string&path,const std::string&t,const std::string&s,const std::string& filename) {
-
-            load_configuration("Profiles.json");
-            const std::string user=other::user;
-            const std::string pass=other::pass;
-            const std::string imei=other::imei;
+            load_configuration("Profiles.json","userdata","user");
+            const std::string user=body_return;
+            load_configuration("Profiles.json","userdata","imei");
+            const std::string imei=body_return;
+            load_configuration("Profiles.json","userdata","pass");
+            const std::string pass=body_return;
             return a6(url,path,user,pass,imei,t,s);
         }
 
