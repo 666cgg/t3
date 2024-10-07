@@ -1,9 +1,9 @@
 #pragma once
-#include<windows.h>
 #include"include/nlohmann/json.hpp"
 #include <fstream>
 #include <iostream>
 #include <cstdarg>
+#include <Windows.h>
 namespace fs=std::filesystem;
 using json = nlohmann::json;
 class other {
@@ -51,8 +51,30 @@ public:
         }
         return 1;
     }
-    
+    static void download_file(const std::string& url, const std::string& path) {
+#ifdef CPPHTTPLIB_OPENSSL_SUPPORT
+        httplib::SSLClient cl(url);
+        httplib::Params params;
+#else
+#endif
+        auto res = cl.Get(url);
+        if (!res) {
+            std::cerr << "Failed to get response from server." << std::endl;
+            return;
+        }
+        if (res->status != 200) {
+            std::cerr << "Failed to download file. Status code: " << res->status << std::endl;
+            return;
+        }
+        std::ofstream file(path, std::ios::binary);
+        if (!file) {
+            std::cerr << "Failed to open file: " << path << std::endl;
+            return;
+        }
+        file << res->body;
+        file.close();
 
 
+    }
 };
 

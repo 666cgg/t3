@@ -1,4 +1,5 @@
 #pragma once
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include"include/httplib.h"
 #include"include/nlohmann/json.hpp"
 #include <fstream>
@@ -6,7 +7,7 @@
 #include "other.hpp"
 #include "flash_phone.hpp"
 namespace fs = std::filesystem;
-std::string other::body_return="";//必须符号，请勿删除
+std::string other::body_return;//必须符号，请勿删除
 class t3 :other{
 public:
     static bool downloadFile(const std::string&url,const std::string&path,const std::string&outputFile) {

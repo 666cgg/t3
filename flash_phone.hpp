@@ -111,8 +111,7 @@ private:
         return b;
     }
     static std::basic_string<char> a9(const std::string &path){
-        std::string a="."+path;
-        auto b=exec(a.c_str());
+        auto b=exec(path.c_str());
         return b;
     }
     static int a10(const std::string &directoryPath){
@@ -122,7 +121,7 @@ private:
         return 0;
     }
     static std::basic_string<char> a11(const std::string &path1, const std::string &path2){
-        std::string a="dd if="+path1+" of="+path2;
+        std::string a="dd if= "+path1+" of="+path2;
         auto b=exec(a.c_str());
         return b;
     }
@@ -175,5 +174,17 @@ private:
         std::string a="adb -s "+id+" shell pm enable "+app_name;
         auto b= exec(a.c_str());
         return b;
+    }
+    static std::string exec(const char* cmd) {
+        std::array<char, 102400> buffer{};
+        std::string result;
+        const std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+        if (!pipe) {
+            throw std::runtime_error("open() failed!");
+        }
+        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+            result += buffer.data();
+        }
+        return result;
     }
 };

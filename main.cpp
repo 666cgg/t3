@@ -2,28 +2,35 @@
 #include "t3.hpp"
 #include"flash_phone.hpp"
 #include"other.hpp"
+#include<OpenSSL/ssl.h>
 #include<windows.h>
+
 std::string version="1000";
-int main() {
+int main(const int color, char* argv[]) {
+    if (color > 1) {
+        const int colorcode = std::stoi(argv[1]);
+        other::setColor(colorcode);
+    }
     SetConsoleOutputCP(65001);
-    other::setColor(1);
     while (true) {
         auto*q=new std::string;
         *q=t3::new_version("http://w.t3yanzheng.com","/3B3A6F36D0CBCBFB","","");
         if(*q>version){
             std::cout<<"当前版本非最新版，请更新\n";
-            system("sleep 3");
+            system("pause");
+            other::setColor(7);
             exit(0);
         }
         if(*q<version){
             std::cout<<"非法版本！！！\n";
+            other::setColor(7);
             exit(0);
         }
         delete q;
         mark2:
-        int *a = new int;
+        auto a = new int;
         std::cout << "欢迎使用本工具\n";
-        //goto mark5;
+
         std::cout << "1.卡密登录\n";
         std::cout << "2.用户登录\n";
         std::cout << "3.用户注册\n";
@@ -45,22 +52,21 @@ int main() {
                     std::cout << "登录成功\n";
                     delete kami;
                     delete imei;
-                    system("sleep 2");
+                    system("pause");
                     system("cls");
                     goto mark5;
-                } else {
-                    std::cout<<"剩余次数："<<3-i<<std::endl;
-                    std::cout<<"任意键重试\n";
-                    auto*c=new std::string;
-                    std::cin>>*c;
-                    delete c;
-                    delete kami;
-                    delete imei;
-                    system("cls");
-                    if(3-i==0){
-                        std::cout<<"输入错误已达上限！！！\n";
-                        exit(0);
-                    }
+                }
+                std::cout<<"剩余次数："<<3-i<<std::endl;
+                std::cout<<"任意键重试\n";
+                auto*c=new std::string;
+                std::cin>>*c;
+                delete c;
+                delete kami;
+                delete imei;
+                system("cls");
+                if(3-i==0){
+                    std::cout<<"输入错误已达上限！！！\n";
+                    exit(0);
                 }
             }
         }else if(*a==3){
@@ -77,7 +83,7 @@ int main() {
             std::cin >> *pass1;
             if (*pass != *pass1) {
                 std::cout<<"两次密码不一致，请重试\n";
-                system("sleep 2");
+                system("pause");
                 system("cls");
                 goto mark3;
             }
@@ -91,18 +97,19 @@ int main() {
             delete pass;
             delete pass1;
             delete email;
-            system("sleep 2");
+            system("pause");
             system("cls");
             goto mark2;
         }else if(*a==2){
             int i=0;
             auto b=t3::Automatic_login("http://w.t3yanzheng.com","/684EB7A5C811AFC7","","","Profiles.json");
             if (b == 0) {
-                std::cout << "登录成功\n";
-                system("sleep 2");
+                std::cout <<"登录成功\n";
+                system("pause");
                 system("cls");
                 goto mark1;
-            }else if(b==1){
+            }
+            if(b==1){
                 std::cout<<"无法检测到用户信息，正在切换手动登录\n";
             }
             for(i=0;i<=3;i++) {
@@ -123,23 +130,23 @@ int main() {
                     delete user;
                     delete pass;
                     delete imei;
-                    system("sleep 2");
+                    system("pause");
                     system("cls");
                     goto mark1;
-                } else {
-                    delete h;
-                    delete user;
-                    delete pass;
-                    delete imei;
-                    std::cout<<"剩余次数："<<3-i<<std::endl;
-                    std::cout<<"任意键重试\n";
-                    auto*c=new std::string;
-                    std::cin>>*c;
-                    delete c;
-                    if(3-i==0){
-                        std::cout<<"输入错误已达上限！！！\n";
-                        exit(0);
-                    }
+                }
+                delete h;
+                delete user;
+                delete pass;
+                delete imei;
+                std::cout<<"剩余次数："<<3-i<<std::endl;
+                std::cout<<"任意键重试\n";
+                auto*c=new std::string;
+                std::cin>>*c;
+                delete c;
+                if(3-i==0){
+                    std::cout<<"输入错误已达上限！！！\n";
+                    other::setColor(7);
+                    exit(0);
                 }
             }
         }else if(*a==4){
@@ -155,12 +162,13 @@ int main() {
             delete user;
             delete card;
             delete b;
-            system("sleep 2");
+            system("pause");
             system("cls");
             goto mark2;
         }else if(*a==20081227){
             goto mark5;
         }else{
+            other::setColor(7);
             exit(0);
         }
         mark1:
@@ -186,13 +194,14 @@ int main() {
             if(*u==0){
                 flash_phone::devices_phone(0);
                 goto mark1;
-            }else if(*u==1){
+            }
+            if(*u==1){
                 flash_phone::devices_phone(1);
                 goto mark1;
-            }else{
-                delete u;
-                exit(0);
             }
+            delete u;
+            other::setColor(7);
+            exit(0);
         }else if(*y==2){
             auto *o=new std::string;
             flash_phone::devices_phone(1);
