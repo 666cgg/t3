@@ -1,4 +1,5 @@
 #pragma once
+#define OTHER
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -66,6 +67,9 @@ public:
     }
     static std::string enable_app(const std::string &id,const std::string &app_name){
         return a21(id,app_name);
+    }
+    static std::string adb_shell(const std::string &id,const std::string &adb) {
+        return a22(id,adb);
     }
 private:
     static int a1(int a) {
@@ -175,6 +179,12 @@ private:
         auto b= exec(a.c_str());
         return b;
     }
+    static std::string a22(const std::string &id,const std::string &adb) {
+        std::string a="adb -s "+id+" shell "+adb;
+        auto b= exec(a.c_str());
+        return b;
+    }
+#ifdef OTHER
     static std::string exec(const char* cmd) {
         std::array<char, 102400> buffer{};
         std::string result;
@@ -187,4 +197,6 @@ private:
         }
         return result;
     }
+#else
+#endif
 };

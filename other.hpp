@@ -9,8 +9,8 @@ using json = nlohmann::json;
 class other {
 public:
     static std::string body_return;
-    static void setColor(int colorCode) {
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    static void setColor(const int colorCode) {
+        const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
         SetConsoleTextAttribute(hConsole, colorCode);
     }
     static std::string exec(const char* cmd) {
@@ -25,7 +25,7 @@ public:
         }
         return result;
     }
-    static void load_configuration(const std::string& filename,const std::string& name,const std::string& name1) {
+    static void load_file_json_configuration(const std::string&filename,const std::string& name,const std::string& name1) {
         using json = nlohmann::json;
         std::ifstream file(filename);
         if (!file.is_open()) {
@@ -33,13 +33,22 @@ public:
         }
         json j;
         file >> j;
+
         if (file.fail()) {
             std::cout<<"无法解析文件为JSON: " + filename<<std::endl;
             exit(0);
         }
         if (j.contains(name) && j[name].is_object()) {
-            const auto& name3 = j[name];
-            if (name3.contains(name1) && name3[name1].is_string()) {
+            if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
+                body_return = name3[name1].get<std::string>();
+            }
+        }
+        j.clear();
+    }
+    static void load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1) {
+        using json = nlohmann::json;
+        if (json j = json::parse(json_str); j.contains(name) && j[name].is_object()) {
+            if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
                 body_return = name3[name1].get<std::string>();
             }
         }
@@ -52,11 +61,7 @@ public:
         return 1;
     }
     static void download_file(const std::string& url, const std::string& path) {
-#ifdef CPPHTTPLIB_OPENSSL_SUPPORT
         httplib::SSLClient cl(url);
-        httplib::Params params;
-#else
-#endif
         auto res = cl.Get(url);
         if (!res) {
             std::cerr << "Failed to get response from server." << std::endl;
@@ -73,8 +78,35 @@ public:
         }
         file << res->body;
         file.close();
-
-
     }
+    static std::string readFirstLine(const std::string& response) {
+        std::istringstream inputStream(response);
+        std::string firstLine;
+        std::getline(inputStream, firstLine); // 读取第一行
+        return firstLine;
+    }
+    static bool isLoginSuccessful(const std::string& firstLine) {
+        return firstLine == "登录成功:200;";
+    }
+    static std::string removeTrailingNewline(std::string str) {
+        if (!str.empty() && (str.back() == '\n' || str.back() == '\r')) {
+            str.pop_back();
+        }
+        return str;
+    }
+    static std::string trim(const std::string& str) {
+        size_t first = str.find_first_not_of(' ');
+        if (std::string::npos == first) {
+            return str;
+        }
+        const size_t last = str.find_last_not_of(' ');
+        return str.substr(first, (last - first + 1));
+    }
+
+
+
+
+
 };
+
 

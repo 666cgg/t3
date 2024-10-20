@@ -2,10 +2,10 @@
 #include "t3.hpp"
 #include"flash_phone.hpp"
 #include"other.hpp"
-#include<OpenSSL/ssl.h>
 #include<windows.h>
-
+using namespace std;
 std::string version="1000";
+#define TOOL
 int main(const int color, char* argv[]) {
     if (color > 1) {
         const int colorcode = std::stoi(argv[1]);
@@ -29,8 +29,9 @@ int main(const int color, char* argv[]) {
         delete q;
         mark2:
         auto a = new int;
-        std::cout << "欢迎使用本工具\n";
 
+        std::cout << "欢迎使用本工具\n";
+#ifdef TOOL
         std::cout << "1.卡密登录\n";
         std::cout << "2.用户登录\n";
         std::cout << "3.用户注册\n";
@@ -171,9 +172,12 @@ int main(const int color, char* argv[]) {
             other::setColor(7);
             exit(0);
         }
-        mark1:
         delete a;
+#else
+#endif
+        mark1:
         mark5:
+
         int *y=new int;
         std::cout<<"请输入选项\n";
         std::cout<<"1.检测设备\n";

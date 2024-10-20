@@ -7,7 +7,7 @@
 #include "other.hpp"
 #include "flash_phone.hpp"
 namespace fs = std::filesystem;
-std::string other::body_return;//必须符号，请勿删除
+std::string other::body_return;
 class t3 :other{
 public:
     static bool downloadFile(const std::string&url,const std::string&path,const std::string&outputFile) {
@@ -151,6 +151,7 @@ private:
             }
             return "连接失败";
         }
+#ifdef OTHER
         static std::string readFirstLine(const std::string& response) {
             std::istringstream inputStream(response);
             std::string firstLine;
@@ -160,13 +161,13 @@ private:
         static bool isLoginSuccessful(const std::string& firstLine) {
             return firstLine == "登录成功:200;";
         }
-         static std::string removeTrailingNewline(std::string str) {
+        static std::string removeTrailingNewline(std::string str) {
             if (!str.empty() && (str.back() == '\n' || str.back() == '\r')) {
                 str.pop_back();
             }
             return str;
         }
-         static std::string trim(const std::string& str) {
+        static std::string trim(const std::string& str) {
             size_t first = str.find_first_not_of(' ');
             if (std::string::npos == first) {
                 return str;
@@ -174,6 +175,8 @@ private:
             const size_t last = str.find_last_not_of(' ');
             return str.substr(first, (last - first + 1));
         }
+#else
+#endif
         static std::string a4(const std::string& url,const std::string& path,const std::string&version,const std::string& t,const std::string& s){
             httplib::Client cl(url);
             httplib::Params params;
@@ -183,9 +186,8 @@ private:
             auto res=cl.Post(path,params);
             if(res) {
                 return res->body;
-            } else {
-                return "连接失败";
             }
+            return "连接失败";
         }
         static std::string a5(const std::string& url,const std::string& path,const std::string&user,const std::string&pass,const std::string&email,const std::string&t,const std::string&s){
             httplib::Client cl(url);
@@ -198,9 +200,8 @@ private:
             auto res=cl.Post(path,params);
             if(res) {
                 return res->body;
-            }else {
-                return "连接失败";
             }
+            return "连接失败";
         }
         static int a6(const std::string&url,const std::string&path,const std::string&user,const std::string&pass,const std::string&imei,const std::string&t,const std::string&s){
             httplib::Client cl(url);
@@ -211,6 +212,7 @@ private:
             params.emplace("t",t);
             params.emplace("s",s);
             auto res=cl.Post(path,params);
+            //load_json_configuration(res,);
             if(res) {
                 int *status_code=new int;
                 auto *content = new std::string;
@@ -240,14 +242,13 @@ private:
                         o << json_str;
                         o.close();
                         return 0;
-                    }else {
-                        std::cout<<*content<<std::endl;
-                        delete fanhuiti;
-                        delete status_code;
-                        delete content;
-                        delete firstLine;
-                        return 1;
                     }
+                    std::cout<<*content<<std::endl;
+                    delete fanhuiti;
+                    delete status_code;
+                    delete content;
+                    delete firstLine;
+                    return 1;
                 }
                 return 5;
             }
@@ -352,11 +353,11 @@ private:
             return j;
         }
         static int a13(const std::string&url,const std::string&path,const std::string&t,const std::string&s,const std::string& filename) {
-            load_configuration("Profiles.json","userdata","user");
+            load_file_json_configuration("Profiles.json","userdata","user");
             const std::string user=body_return;
-            load_configuration("Profiles.json","userdata","imei");
+            load_file_json_configuration("Profiles.json","userdata","imei");
             const std::string imei=body_return;
-            load_configuration("Profiles.json","userdata","pass");
+            load_file_json_configuration("Profiles.json","userdata","pass");
             const std::string pass=body_return;
             return a6(url,path,user,pass,imei,t,s);
         }
@@ -385,6 +386,18 @@ private:
             httplib::Client cl(url);
             httplib::Params params;
             params.emplace("ver",version);
+            params.emplace("t",t);
+            params.emplace("s",s);
+            auto res=cl.Post(path,params);
+            auto b=res->body;
+            return b;
+        }
+        static std::string a17(const std::string&url,const std::string&path,const std::string&user,const std::string&pass,const std::string&statecode,const std::string&t,const std::string&s) {
+            httplib::Client cl(url);
+            httplib::Params params;
+            params.emplace("user",user);
+            params.emplace("pass",pass);
+            params.emplace("statecode",statecode);
             params.emplace("t",t);
             params.emplace("s",s);
             auto res=cl.Post(path,params);
