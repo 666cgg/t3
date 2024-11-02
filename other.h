@@ -20,10 +20,10 @@ using json = nlohmann::json;
 
 class MY_DLL_API other {
 public:
-    static std::string body_return;
+
     static std::string exec(const char* cmd);
-    static void load_file_json_configuration(const std::string& filename, const std::string& name, const std::string& name1);
-    static void load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1);
+    static std::string load_file_json_configuration(const std::string& filename, const std::string& name, const std::string& name1);
+    static std::string load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1);
     static int check_file(const std::string& path);
     static void download_file(const std::string& url, const std::string& path);
     static std::string readFirstLine(const std::string& response);
@@ -31,7 +31,6 @@ public:
     static std::string removeTrailingNewline(std::string str);
     static std::string trim(const std::string& str);
     static void setColor(int colorCode);
-private:
 };
 
 #endif // OTHER_H

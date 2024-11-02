@@ -1,7 +1,7 @@
 #define BUILDING_MY_DLL
 #include "t3.h"
 #include<json.hpp>
-std::string t3::body_return_t3;
+
 std::string readFirstLine(const std::string &response) {
     std::istringstream inputStream(response);
     std::string firstLine;
@@ -25,7 +25,7 @@ std::string trim(const std::string &str) {
     const size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last - first + 1));
 }
-void load_file_json_configuration(const std::string &filename, const std::string &name, const std::string &name1) {
+std::string load_file_json_configuration(const std::string &filename, const std::string &name, const std::string &name1) {
     using json = nlohmann::json;
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -40,10 +40,22 @@ void load_file_json_configuration(const std::string &filename, const std::string
     }
     if (j.contains(name) && j[name].is_object()) {
         if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
-            t3::body_return_t3 = name3[name1].get<std::string>();
+            auto b =name3[name1].get<std::string>();
+            j.clear();
+            return b;
         }
     }
     j.clear();
+    return "";
+}
+std::string load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1) {
+    using json = nlohmann::json;
+    if (json j = json::parse(json_str); j.contains(name) && j[name].is_object()) {
+        if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
+            return name3[name1].get<std::string>();
+        }
+    }
+    return "";
 }
 bool t3::downloadFile(const std::string&url,const std::string&path,const std::string&outputFile) {
     httplib::Client cli(url);
@@ -61,12 +73,9 @@ bool t3::downloadFile(const std::string&url,const std::string&path,const std::st
     return false;
 }
 int t3::Automatic_login(const std::string&url,const std::string&path,const std::string&t,const std::string&s,const std::string&filename) {
-    load_file_json_configuration("Profiles.json","userdata","user");
-    const std::string user=t3::body_return_t3;
-    load_file_json_configuration("Profiles.json","userdata","imei");
-    const std::string imei=body_return_t3;
-    load_file_json_configuration("Profiles.json","userdata","pass");
-    const std::string pass=body_return_t3;
+    const std::string user=load_file_json_configuration("Profiles.json","userdata","user");
+    const std::string imei=load_file_json_configuration("Profiles.json","userdata","imei");
+    const std::string pass=load_file_json_configuration("Profiles.json","userdata","pass");
     return user_login(url,path,user,pass,imei,t,s);
 }
 int t3::code_login(const std::string& url,const std::string &path,const std::string&appkey,const std:: string& kami,const std::string &imei,const std:: string&t,const std:: string&s) {
@@ -310,7 +319,7 @@ std::string t3::kami_state(const std::string&url,const std::string&path,const st
     }
     return "连接失败";
 }
-nlohmann::json t3::read_json_file(const std::string& filename) {
+nlohmann::json read_json_file(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("无法打开文件: " + filename);

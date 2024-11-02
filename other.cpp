@@ -1,6 +1,5 @@
 #define BUILDING_MY_DLL
 #include "other.h"
-std::string other::body_return;
 std::string other::exec(const char *cmd) {
     std::array<char, 102400> buffer{};
     std::string result;
@@ -13,7 +12,7 @@ std::string other::exec(const char *cmd) {
     }
     return result;
 }
-void other::load_file_json_configuration(const std::string &filename, const std::string &name, const std::string &name1) {
+std::string other::load_file_json_configuration(const std::string &filename, const std::string &name, const std::string &name1) {
     using json = nlohmann::json;
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -28,18 +27,22 @@ void other::load_file_json_configuration(const std::string &filename, const std:
     }
     if (j.contains(name) && j[name].is_object()) {
         if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
-            body_return = name3[name1].get<std::string>();
+            auto b =name3[name1].get<std::string>();
+            j.clear();
+            return b;
         }
     }
     j.clear();
+    return "";
 }
-void other::load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1) {
+std::string other::load_json_configuration(const std::string &json_str, const std::string &name, const std::string &name1) {
     using json = nlohmann::json;
     if (json j = json::parse(json_str); j.contains(name) && j[name].is_object()) {
         if (const auto& name3 = j[name]; name3.contains(name1) && name3[name1].is_string()) {
-            body_return = name3[name1].get<std::string>();
+            return name3[name1].get<std::string>();
         }
     }
+    return "";
 }
 int other::check_file(const std::string &path) {
     if(fs::exists(path)) {

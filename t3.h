@@ -19,8 +19,6 @@ using json = nlohmann::json;
 
 class MY_DLL_API t3 {
 public:
-    static std::string body_return_t3;
-
     // 下载文件
     static bool downloadFile(const std::string& url, const std::string& path, const std::string& outputFile);
 
@@ -65,8 +63,8 @@ public:
     // KAMI 状态查询
     static std::string kami_state(const std::string& url, const std::string& path, const std::string& kami, const std::string& t, const std::string& s);
 
-    // 读取 JSON 文件
-    static nlohmann::json read_json_file(const std::string& filename);
+
+
 
     // 心跳验证
     static std::string heart_verify(const std::string& url, const std::string& path, const std::string& user, const std::string& pass, const std::string& statecode, const std::string& t, const std::string& s);
